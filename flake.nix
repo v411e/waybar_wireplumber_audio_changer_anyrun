@@ -3,12 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system};
+  outputs = { self, nixpkgs }:
+      let pkgs = nixpkgs.legacyPackages.x86_64-linux;
       in {
         audio_changer = pkgs.writeScript "audio_changer.py"
           ''
@@ -81,5 +79,5 @@
             selected_sink_id = get_selected_sink_id(parse_wpctl_status())
             subprocess.run(f"wpctl set-default {selected_sink_id}", shell=True)
           '';
-      });
+      };
 }
