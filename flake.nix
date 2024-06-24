@@ -43,7 +43,7 @@
               for index, sink in enumerate(sinks):
                   sinks[index] = sink.split("[vol:")[0].strip()
     
-              # strip the * from the default sink and instead append "- Default" to the end. Looks neater in the wofi list this way.
+              # strip the * from the default sink and instead append "- Default" to the end. Looks neater in the anyrun list this way.
               for index, sink in enumerate(sinks):
                   if sink.startswith("*"):
                       sinks[index] = sink.strip().replace("*", "").strip() + " - Default"
@@ -53,14 +53,14 @@
 
               return sinks_dict
 
-          #if there's only 2 outputs then action just switch and return the next id, if there's more, show wofi for selection
+          #if there's only 2 outputs then action just switch and return the next id, if there's more, show anyrun for selection
           def get_selected_sink_id(sinks):
               if len(sinks) == 2:
                   for index, item in enumerate(sinks):
                       if not item['sink_name'].endswith(" - Default"):
                           return item['sink_id']
               else: 
-                  # get the list of sinks ready to put into wofi - highlight the current default sink
+                  # get the list of sinks ready to put into anyrun - highlight the current default sink
                   output = '''
                   for items in sinks:        
                       if items['sink_name'].endswith(" - Default"):
@@ -68,15 +68,15 @@
                       else:
                           output += f"{items['sink_name']}\n"
 
-                  # Call wofi and show the list. take the selected sink name and set it as the default sink
-                  wofi_command = f"echo '{output}' | anyrun --show-results-immediately true --plugins ${anyrun.packages.${pkgs.system}.stdin}/lib/libstdin.so"
-                  wofi_process = subprocess.run(wofi_command, shell=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                  # Call anyrun and show the list. take the selected sink name and set it as the default sink
+                  anyrun_command = f"echo '{output}' | anyrun --show-results-immediately true --plugins ${anyrun.packages.${pkgs.system}.stdin}/lib/libstdin.so"
+                  anyrun_process = subprocess.run(anyrun_command, shell=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-                  if wofi_process.returncode != 0:
+                  if anyrun_process.returncode != 0:
                       print("User cancelled the operation.")
                       exit(0)
 
-                  selected_sink_name = wofi_process.stdout.strip()
+                  selected_sink_name = anyrun_process.stdout.strip()
                   selected_sink = next(sink for sink in sinks if sink['sink_name'] == selected_sink_name)
                   return selected_sink['sink_id']
 
