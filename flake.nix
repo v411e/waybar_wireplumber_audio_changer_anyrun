@@ -3,13 +3,9 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    anyrun = {
-      url = "github:Kirottu/anyrun"; # no tags
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, anyrun }:
+  outputs = { self, nixpkgs }:
     let pkgs = nixpkgs.legacyPackages.x86_64-linux;
     in {
       audio_changer = pkgs.writeScript "audio_changer.py"
@@ -69,7 +65,7 @@
                           output += f"{items['sink_name']}\n"
 
                   # Call anyrun and show the list. take the selected sink name and set it as the default sink
-                  anyrun_command = f"echo '{output}' | anyrun --show-results-immediately true --plugins ${anyrun.packages.${pkgs.system}.stdin}/lib/libstdin.so"
+                  anyrun_command = f"echo '{output}' | anyrun --show-results-immediately true --plugins ${pkgs.anyrun}/lib/libstdin.so"
                   anyrun_process = subprocess.run(anyrun_command, shell=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
                   if anyrun_process.returncode != 0:
